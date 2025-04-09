@@ -1,0 +1,26 @@
+[package]
+name = "voting-protocol"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+bcs = "0.1"
+rand_core = { version = "0.5", features = ["std"] }
+thiserror = "1.0"
+ed25519-dalek = { version = "1.0", features = ["serde"] }
+hex = { version = "0.4", features = ["serde"] }
+rand = "0.8"
+tokio = { version = "1", features = ["rt", "macros"] }
+reqwest = { version = "0.11", features = ["json"] }
+serde_json = "1.0"
+serde = { version = "1.0", features = ["derive"] }
+anyhow = "1.0"
+base64 = "0.22.1"
+sha2 = "0.10.8"
+ark-bn254      = "0.3"
+ark-sponge     = "0.3"
+aptos-types = { workspace = true }
+aptos-crypto = { workspace = true }
+aptos-keyless-pepper-common = { workspace = true }
+ark-bls12-381 = { workspace = true }
+ark-serialize = { workspace = true }
