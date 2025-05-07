@@ -25,7 +25,7 @@ impl PepperServiceClient {
         }
     }
 
-    pub async fn get_pepper(&self, jwt: &str, epk: &EphemeralPublicKey, exp_date_secs: u64, blinder: [u8; 31]) -> Result<Vec<u8>> {
+    pub async fn get_pepper_and_vuf(&self, jwt: &str, epk: &EphemeralPublicKey, exp_date_secs: u64, blinder: [u8; 31]) -> Result<(Vec<u8>, Vec<u8>)> {
         // Get the pepper VUF
         let vuf_pub_key_url = format!("{}/v0/vuf-pub-key", self.base_url);
         let fetch_url = format!("{}/v0/fetch", self.base_url);
@@ -131,8 +131,18 @@ impl PepperServiceClient {
             .unwrap();
         println!("Pepper verification succeeded!");
 
-        Ok(pepper_response.pepper)
+        Ok((pepper.clone(), response.public_key.clone()))
     }
+}
+
+pub fn calculate_anonymous_id(pepper: Vec<u8>) -> Vec<u8> {
+    let mut hasher = Sha256::new();
+    hasher.update(pepper);
+    
+    let result = hasher.finalize();
+    let mut bytes = [0u8; 32];
+    bytes.copy_from_slice(&result[..]);
+    bytes.to_vec()
 }
 
 fn extract_jwt_nonce(jwt: &str) -> Option<String> {
@@ -152,7 +162,7 @@ fn extract_jwt_nonce(jwt: &str) -> Option<String> {
 
 /// Create a nullifier from a pepper and an election ID.
 #[warn(dead_code)]
-pub fn create_hash(pepper: &[u8], election_id: &str) -> [u8; 32] {
+pub fn create_nullifier(pepper: &[u8], election_id: &str) -> [u8; 32] {
     let mut hasher = Sha256::new();
     hasher.update(pepper);
     hasher.update(election_id.as_bytes());

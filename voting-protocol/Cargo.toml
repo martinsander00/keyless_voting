@@ -20,7 +20,10 @@ sha2 = "0.10.8"
 ark-bn254      = "0.3"
 ark-sponge     = "0.3"
 aptos-types = { workspace = true }
-aptos-crypto = { workspace = true }
+aptos-sdk = { workspace = true }
+aptos-crypto = { workspace = true, features = ["cloneable-private-keys"] }
+aptos-rest-client = { workspace = true }
 aptos-keyless-pepper-common = { workspace = true }
 ark-bls12-381 = { workspace = true }
 ark-serialize = { workspace = true }
+url = "2.4"

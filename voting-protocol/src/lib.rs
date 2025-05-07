@@ -1,8 +1,9 @@
 pub mod keys;
+pub mod pepper_integration;
+pub mod transactions;
+pub mod pepper;
 
-mod pepper;
-
-use pepper::{PepperServiceClient};
+use pepper::{PepperServiceClient, calculate_anonymous_id};
 use anyhow::{anyhow, Result};
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
@@ -120,13 +121,42 @@ impl VotingProtocol {
         println!("Using provided ephemeral public key: {:?}", hex::encode(epk.to_bytes()));
 
         // Get the pepper from the pepper service.
-        let pepper = match &self.pepper_client {
+        let (pepper, vuf) = match &self.pepper_client {
             Some(client) => {
                 let client = client.lock().await;
-                client.get_pepper(jwt_token, &epk, exp_date_secs, blinder).await?
+                client.get_pepper_and_vuf(jwt_token, &epk, exp_date_secs, blinder).await?
             },
             None => return Err(anyhow!("Pepper service not configured")),
         };
+
+        let hashed_pepper = calculate_anonymous_id(pepper.clone());
+
+        let proof_response = pepper_integration::generate_proof(
+            jwt_token,
+            &epk,
+            exp_date_secs,
+            &blinder,
+            &pepper
+        ).await?;
+
+        println!("{:#?}", proof_response);
+
+        match transactions::submit_register_transaction(
+            jwt_token,
+            &proof_response,
+            &esk,
+            &epk,
+            exp_date_secs,
+            &pepper,
+            blinder,
+        ).await {
+            Ok(_) => {
+                println!("Transaction submitted and confirmed in the blockchain successfully");
+            },
+            Err(e) => {
+                return Err(anyhow!("Failed to register on blockchain: {}", e));
+            }
+        }
 
         // Register the user using the provided keypair.
         let user_record = UserRecord {

@@ -25,17 +25,16 @@ serde_json = { workspace = true }
 tokio = { workspace = true }
 bcs = { workspace = true }
 
-# Additional dependencies your project needs
-anyhow = { workspace = true } # Likely already in workspace
-serde = { workspace = true } # Likely already in workspace
+anyhow = { workspace = true } 
+serde = { workspace = true } 
 clap = { version = "4.3", features = ["derive"] }
 oauth2 = "4.4"
 url = "2.4"
-rand = { workspace = true } # Likely already in workspace
+rand = { workspace = true } 
 sha2 = "0.10"
 dotenv = "0.15.0"
 webbrowser = "0.8"
-thiserror = { workspace = true } # Likely already in workspace
+thiserror = { workspace = true } 
 
 # Local module
 voting-protocol = { path = "./voting-protocol" }
