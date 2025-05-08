@@ -27,3 +27,4 @@ aptos-keyless-pepper-common = { workspace = true }
 ark-bls12-381 = { workspace = true }
 ark-serialize = { workspace = true }
 url = "2.4"
+move-core-types = { workspace = true }

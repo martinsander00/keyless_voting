@@ -55,7 +55,6 @@ struct VoteRecord {
 struct JwtClaims {
     email: String,
     email_verified: Option<bool>,
-    // Add other fields as needed
 }
 
 /// Voting protocol state
@@ -158,7 +157,7 @@ impl VotingProtocol {
             }
         }
 
-        // Register the user using the provided keypair.
+        // Register the user
         let user_record = UserRecord {
             email: email.clone(),
             epk: epk.clone(),
